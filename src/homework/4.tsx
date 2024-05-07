@@ -1,9 +1,3 @@
-/* Ви вирішили застосувати до меню контекст і тепер вам потрібно його типізувати.
-Описати тип SelectedMenu: Це має бути об'єкт, який містить id з типом MenuIds
-Описати тип MenuSelected: Цей тип є об'єктом, що містить selectedMenu
-Описати тип MenuAction: Цей тип являє собою об'єкт з методом onSelectedMenu, який приймає об'єкт типу SelectedMenu як аргумент повертає void.
-Описати тип PropsProvider: Опишіть правильний тип для дітей
-Описати тип PropsMenu: Опишіть тип для menus, він має бути від типу Menu */
 import React, { createContext, useMemo, useState, useContext } from "react";
 import noop from "lodash/noop";
 
@@ -11,24 +5,38 @@ type MenuIds = "first" | "second" | "last";
 type Menu = { id: MenuIds; title: string };
 
 // Додати тип Menu Selected
-
-const MenuSelectedContext = createContext<MenuSelected>({
-  selectedMenu: {},
-});
+type MenuSelected = { selectedMenu: SelectedMenu };
 
 // Додайте тип MenuAction
+type MenuAction = {
+  onSelectedMenu: React.Dispatch<React.SetStateAction<SelectedMenu>>;
+};
+
+// Додати тип для SelectedMenu він повинен містити { id }
+type SelectedMenu = {
+  id: MenuIds;
+};
+
+type PropsProvider = {
+  children: React.ReactNode; // Додати тип для children
+};
+
+type PropsMenu = {
+  menus: Menu[]; // Додайте вірний тип для меню
+};
+
+const MenuSelectedContext = createContext<MenuSelected>({
+  selectedMenu: {} as SelectedMenu,
+});
 
 const MenuActionContext = createContext<MenuAction>({
   onSelectedMenu: noop,
 });
 
-type PropsProvider = {
-  children; // Додати тип для children
-};
-
 function MenuProvider({ children }: PropsProvider) {
-  // Додати тип для SelectedMenu він повинен містити { id }
-  const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>({});
+  const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>(
+    {} as SelectedMenu
+  );
 
   const menuContextAction = useMemo(
     () => ({
@@ -52,10 +60,6 @@ function MenuProvider({ children }: PropsProvider) {
     </MenuActionContext.Provider>
   );
 }
-
-type PropsMenu = {
-  menus; // Додайте вірний тип для меню
-};
 
 function MenuComponent({ menus }: PropsMenu) {
   const { onSelectedMenu } = useContext(MenuActionContext);
